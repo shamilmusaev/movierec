@@ -149,7 +149,6 @@ export default function Home() {
     ? getImageUrl(currentMovie.backdrop_path, 'w780')
     : null;
 
-
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Content */}
