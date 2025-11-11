@@ -33,8 +33,9 @@ export function useSwipe({
     const swipeDistance = Math.abs(offset.x);
     const swipeVelocity = Math.abs(velocity.x);
 
-    // Determine if swipe threshold met (distance OR velocity)
-    if (swipeDistance > threshold || swipeVelocity > 0.5) {
+    // Lower velocity threshold for more responsive swipes (0.3 instead of 0.5)
+    // This makes swipes feel more like TikTok
+    if (swipeDistance > threshold || swipeVelocity > 0.3) {
       if (offset.x > 0) {
         // Swipe right
         setSwipeState({ isDragging: false, direction: 'right', distance: offset.x });
@@ -45,7 +46,7 @@ export function useSwipe({
         onSwipeLeft?.();
       }
     } else {
-      // Didn't meet threshold, reset
+      // Didn't meet threshold, reset with smooth spring animation
       setSwipeState({ isDragging: false, direction: null, distance: 0 });
     }
   };

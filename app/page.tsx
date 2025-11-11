@@ -90,16 +90,19 @@ export default function Home() {
     }
   };
 
-  const handleSwipeLeft = () => {
-    setFeedbackDirection('left');
-    setShowFeedback(true);
-    setTimeout(() => setShowFeedback(false), 500);
-    
+  const goToNextMovie = () => {
     if (currentIndex < movies.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
       loadMovies(); // Load more when reaching end
     }
+  };
+
+  const handleSwipeLeft = () => {
+    setFeedbackDirection('left');
+    setShowFeedback(true);
+    setTimeout(() => setShowFeedback(false), 500);
+    goToNextMovie();
   };
 
   const handleSwipeRight = () => {
@@ -111,18 +114,18 @@ export default function Home() {
     setFeedbackDirection('right');
     setShowFeedback(true);
     setTimeout(() => setShowFeedback(false), 500);
+    goToNextMovie();
+  };
 
-    if (currentIndex < movies.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      loadMovies();
-    }
+  const handleVideoEnd = () => {
+    // Auto-advance to next video when current one ends
+    goToNextMovie();
   };
 
   const { swipeState, handlers } = useSwipe({
     onSwipeLeft: handleSwipeLeft,
     onSwipeRight: handleSwipeRight,
-    threshold: 100,
+    threshold: 80, // Lower threshold for more responsive swipes
   });
 
   const handleCategoryChange = (categoryId: string | number) => {
@@ -163,7 +166,7 @@ export default function Home() {
         </div>
 
         {/* Main Swipe Area */}
-        <div className="flex-1 flex items-center justify-center px-0 pb-20">
+        <div className="flex-1 flex items-center justify-center px-0 pb-16 md:pb-20">
           {isLoading ? (
             <div className="flex items-center justify-center">
               <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
@@ -191,6 +194,7 @@ export default function Home() {
                     muted={muted}
                     onFavoriteToggle={() => favorites.toggle(currentMovie.id)}
                     onMuteToggle={() => setMuted(!muted)}
+                    onVideoEnd={handleVideoEnd}
                     dragHandlers={handlers}
                   />
                 )}

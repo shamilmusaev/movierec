@@ -8,6 +8,8 @@ interface TrailerPlayerProps {
   isActive: boolean;
   muted?: boolean;
   onMuteToggle?: () => void;
+  onVideoEnd?: () => void;
+  onError?: () => void;
 }
 
 export function TrailerPlayer({
@@ -15,6 +17,8 @@ export function TrailerPlayer({
   isActive,
   muted = true,
   onMuteToggle,
+  onVideoEnd,
+  onError,
 }: TrailerPlayerProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -27,6 +31,24 @@ export function TrailerPlayer({
       setHasError(false);
     }
   }, [isActive, videoKey]);
+
+  // Listen for YouTube player events (video end)
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        // YouTube player state: 0 = ended, 1 = playing, 2 = paused
+        if (data.event === 'infoDelivery' && data.info?.playerState === 0) {
+          onVideoEnd?.();
+        }
+      } catch (e) {
+        // Ignore parsing errors from other postMessage sources
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [onVideoEnd]);
 
   // Управление звуком через postMessage
   useEffect(() => {
@@ -50,14 +72,19 @@ export function TrailerPlayer({
   const handleError = () => {
     setIsLoading(false);
     setHasError(true);
+    onError?.();
   };
 
-  if (!videoKey || hasError) {
-    return null; // Fallback to poster in parent component
+  if (!videoKey) {
+    return null; // No video key provided
+  }
+
+  if (hasError) {
+    return null; // Error loading video, parent will show poster fallback
   }
 
   // Используем фиксированный URL с enablejsapi для управления через API
-  const embedUrl = `${getYouTubeEmbedUrl(videoKey, isActive, true)}&enablejsapi=1`;
+  const embedUrl = `${getYouTubeEmbedUrl(videoKey, isActive, true)}&enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`;
 
   return (
     <div className="relative w-full h-full">
