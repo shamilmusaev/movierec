@@ -28,16 +28,20 @@ export function TrailerPlayer({
     }
   }, [isActive, videoKey]);
 
-  // Управление звуком через postMessage
+  // Управление звуком через postMessage - применяем при изменении muted ИЛИ при загрузке нового видео
   useEffect(() => {
-    if (iframeRef.current && playerRef.current) {
+    if (!iframeRef.current) return;
+
+    const timer = setTimeout(() => {
       const command = muted ? 'mute' : 'unMute';
-      iframeRef.current.contentWindow?.postMessage(
+      iframeRef.current?.contentWindow?.postMessage(
         JSON.stringify({ event: 'command', func: command, args: [] }),
         '*'
       );
-    }
-  }, [muted]);
+    }, 500); // Даем время на загрузку iframe
+
+    return () => clearTimeout(timer);
+  }, [muted, videoKey]); // Добавляем videoKey чтобы применять при смене видео
 
   const handleLoad = () => {
     setIsLoading(false);
@@ -56,8 +60,8 @@ export function TrailerPlayer({
     return null; // Fallback to poster in parent component
   }
 
-  // Используем фиксированный URL с enablejsapi для управления через API
-  const embedUrl = `${getYouTubeEmbedUrl(videoKey, isActive, true)}&enablejsapi=1`;
+  // Всегда начинаем с muted в URL (YouTube требование для autoplay), но потом управляем через postMessage
+  const embedUrl = `${getYouTubeEmbedUrl(videoKey, isActive, true)}&enablejsapi=1&vq=hd720`;
 
   return (
     <div className="relative w-full h-full">
@@ -84,17 +88,17 @@ export function TrailerPlayer({
       {onMuteToggle && (
         <button
           onClick={onMuteToggle}
-          className="absolute bottom-4 right-4 bg-black/70 hover:bg-black/90 text-white p-3 rounded-full transition-colors z-20"
+          className="absolute top-6 left-6 mt-safe bg-black/60 backdrop-blur-sm hover:bg-black/80 text-white p-3.5 rounded-full transition-colors z-20 shadow-lg"
           aria-label={muted ? 'Unmute' : 'Mute'}
         >
           {muted ? (
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clipRule="evenodd" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
             </svg>
           ) : (
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
             </svg>
           )}
         </button>

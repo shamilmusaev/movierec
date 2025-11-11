@@ -136,6 +136,8 @@ export function getYouTubeEmbedUrl(videoKey: string, autoplay: boolean = true, m
     fs: '0', // Убираем кнопку fullscreen
     iv_load_policy: '3', // Убираем аннотации
     disablekb: '1', // Отключаем клавиатурные шорткаты
+    loop: '1', // Зацикливаем видео
+    playlist: videoKey, // Требуется для loop на одном видео
   });
   
   return `https://www.youtube.com/embed/${videoKey}?${params.toString()}`;

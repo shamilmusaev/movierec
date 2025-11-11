@@ -63,7 +63,7 @@ export default function Home() {
           ? await getPopularMovies()
           : await getMoviesByGenre(activeCategory as number);
 
-      // Load trailers for first 5 movies
+      // Load trailers for first 20 movies
       const moviesWithTrailers = await Promise.all(
         moviesList.slice(0, 20).map(async (movie) => {
           try {
@@ -81,7 +81,22 @@ export default function Home() {
         })
       );
 
-      setMovies(moviesWithTrailers);
+      // Filter out movies without valid trailers
+      const validMovies = moviesWithTrailers.filter(
+        (movie) => movie.trailer !== null && movie.trailer.key && movie.trailer.key.length > 0
+      );
+
+      console.log(`Loaded ${moviesWithTrailers.length} movies, ${validMovies.length} have valid trailers`);
+
+      // Randomize movie order for variety
+      const shuffledMovies = validMovies.sort(() => Math.random() - 0.5);
+
+      // If we don't have enough valid trailers, we could load more (future enhancement)
+      if (shuffledMovies.length < 5) {
+        console.warn('Not enough movies with trailers, consider loading more');
+      }
+
+      setMovies(shuffledMovies);
       setCurrentIndex(0);
     } catch (error) {
       console.error('Error loading movies:', error);
@@ -153,7 +168,7 @@ export default function Home() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Category Tabs */}
+        {/* Category Tabs with safe-area */}
         <div className="pt-safe">
           <CategoryTabs
             categories={categories}
@@ -163,7 +178,7 @@ export default function Home() {
         </div>
 
         {/* Main Swipe Area */}
-        <div className="flex-1 flex items-center justify-center px-0 pb-20">
+        <div className="flex-1 flex items-center justify-center px-0 pb-20 pb-safe">
           {isLoading ? (
             <div className="flex items-center justify-center">
               <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />

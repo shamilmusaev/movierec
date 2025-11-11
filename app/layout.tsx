@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TrailerSwipe - Discover Movies Through Trailers",
   description: "Swipe through movie trailers and discover your next favorite film. A TikTok-style movie discovery experience.",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
 };
 
 export default function RootLayout({

@@ -43,3 +43,17 @@ body {
 .pt-safe {
   padding-top: env(safe-area-inset-top);
 }
+
+.pb-safe {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+
+.mt-safe {
+  margin-top: env(safe-area-inset-top);
+}
+
+/* Text shadow for readability without heavy gradients */
+.text-shadow-strong {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
