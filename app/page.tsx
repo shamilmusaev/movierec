@@ -163,7 +163,7 @@ export default function Home() {
         </div>
 
         {/* Main Swipe Area */}
-        <div className="flex-1 flex items-center justify-center px-4 pb-20">
+        <div className="flex-1 flex items-center justify-center px-0 pb-20">
           {isLoading ? (
             <div className="flex items-center justify-center">
               <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
@@ -179,7 +179,7 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <div className="relative w-full h-full max-w-md">
+            <div className="relative w-full h-full">
               <AnimatePresence mode="wait">
                 {currentMovie && (
                   <MovieCard

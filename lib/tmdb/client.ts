@@ -130,9 +130,12 @@ export function getYouTubeEmbedUrl(videoKey: string, autoplay: boolean = true, m
     autoplay: autoplay ? '1' : '0',
     mute: mute ? '1' : '0',
     playsinline: '1',
-    controls: '1',
+    controls: '0', // Полностью убираем контролы
     modestbranding: '1',
     rel: '0',
+    fs: '0', // Убираем кнопку fullscreen
+    iv_load_policy: '3', // Убираем аннотации
+    disablekb: '1', // Отключаем клавиатурные шорткаты
   });
   
   return `https://www.youtube.com/embed/${videoKey}?${params.toString()}`;

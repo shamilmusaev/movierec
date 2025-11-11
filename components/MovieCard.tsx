@@ -42,7 +42,7 @@ export function MovieCard({
       {...dragHandlers}
       style={style}
     >
-      <div className="relative w-full max-w-md h-[70vh] bg-zinc-900 rounded-2xl overflow-hidden shadow-2xl">
+      <div className="relative w-full h-[85vh] bg-zinc-900 rounded-xl overflow-hidden shadow-2xl">
         {/* Trailer or Poster */}
         {hasTrailer && isActive ? (
           <div className="w-full h-full">
@@ -59,7 +59,7 @@ export function MovieCard({
               src={posterUrl}
               alt={movie.title}
               fill
-              className="object-cover"
+              className="object-cover object-center"
               priority={isActive}
             />
           </div>
@@ -69,13 +69,13 @@ export function MovieCard({
           </div>
         )}
 
-        {/* Gradient overlay for better text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+        {/* Gradient overlay for better text readability - larger for vertical */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none" />
 
         {/* Movie Info */}
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-          <h2 className="text-2xl font-bold mb-2 line-clamp-2">{movie.title}</h2>
-          <p className="text-sm text-zinc-300 line-clamp-3 mb-4">{movie.overview}</p>
+          <h2 className="text-3xl font-bold mb-3 line-clamp-2">{movie.title}</h2>
+          <p className="text-sm text-zinc-300 line-clamp-2 mb-4">{movie.overview}</p>
           
           <div className="flex items-center gap-4 text-sm">
             <span className="flex items-center gap-1">

@@ -19,6 +19,7 @@ export function TrailerPlayer({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<any>(null);
 
   useEffect(() => {
     if (isActive && videoKey) {
@@ -27,8 +28,23 @@ export function TrailerPlayer({
     }
   }, [isActive, videoKey]);
 
+  // Управление звуком через postMessage
+  useEffect(() => {
+    if (iframeRef.current && playerRef.current) {
+      const command = muted ? 'mute' : 'unMute';
+      iframeRef.current.contentWindow?.postMessage(
+        JSON.stringify({ event: 'command', func: command, args: [] }),
+        '*'
+      );
+    }
+  }, [muted]);
+
   const handleLoad = () => {
     setIsLoading(false);
+    // Сохраняем ссылку на плеер
+    if (iframeRef.current) {
+      playerRef.current = iframeRef.current;
+    }
   };
 
   const handleError = () => {
@@ -40,7 +56,8 @@ export function TrailerPlayer({
     return null; // Fallback to poster in parent component
   }
 
-  const embedUrl = getYouTubeEmbedUrl(videoKey, isActive, muted);
+  // Используем фиксированный URL с enablejsapi для управления через API
+  const embedUrl = `${getYouTubeEmbedUrl(videoKey, isActive, true)}&enablejsapi=1`;
 
   return (
     <div className="relative w-full h-full">
@@ -50,16 +67,19 @@ export function TrailerPlayer({
         </div>
       )}
       
-      <iframe
-        ref={iframeRef}
-        src={embedUrl}
-        className="w-full h-full"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        onLoad={handleLoad}
-        onError={handleError}
-        style={{ border: 'none' }}
-      />
+      {/* Wrapper for object-fit cover on iframe */}
+      <div className="absolute inset-0 overflow-hidden">
+        <iframe
+          ref={iframeRef}
+          src={embedUrl}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.77vh] h-full pointer-events-none"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          onLoad={handleLoad}
+          onError={handleError}
+          style={{ border: 'none', minWidth: '100%', minHeight: '100%' }}
+        />
+      </div>
 
       {onMuteToggle && (
         <button
