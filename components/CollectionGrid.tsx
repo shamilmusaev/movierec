@@ -34,7 +34,7 @@ export function CollectionGrid({ collections, isLoading }: CollectionGridProps) 
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-4 md:px-6 lg:px-8 max-w-7xl mx-auto pb-24 pb-safe">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 lg:gap-8 px-3 md:px-6 lg:px-8 max-w-7xl mx-auto pb-24 pb-safe">
       {collections.map((collection) => (
         <CollectionCard key={collection.id} collection={collection} />
       ))}

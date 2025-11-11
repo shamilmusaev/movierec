@@ -16,16 +16,16 @@ export function CategoryTabs({
 }: CategoryTabsProps) {
   return (
     <div className="w-full overflow-x-auto scrollbar-hide">
-      <div className="flex gap-2 px-4 py-3 min-w-min">
+      <div className="flex gap-2 px-3 md:px-4 py-2 md:py-3 min-w-min">
         {categories.map((category) => {
           const isActive = category.id === activeCategory;
-          
+
           return (
             <motion.button
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
               className={`
-                relative px-6 py-2 rounded-full font-medium text-sm whitespace-nowrap
+                relative px-4 md:px-6 py-1.5 md:py-2 rounded-full font-medium text-xs md:text-sm whitespace-nowrap
                 transition-colors
                 ${isActive
                   ? 'text-white'

@@ -194,7 +194,7 @@ export default function Home() {
                 key={movie.id}
                 data-index={index}
                 data-movie-card
-                className="h-[calc(100vh-8rem)] snap-start snap-always flex items-center justify-center px-4"
+                className="h-screen snap-start snap-always flex items-center justify-center"
                 style={{ scrollSnapStop: 'always' }}
               >
                 <MovieCard
