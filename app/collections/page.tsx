@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getAllCollections, type Collection } from '@/data/collections';
 import { CollectionGrid } from '@/components/CollectionGrid';
+import { TabBar } from '@/components/TabBar';
 
 export default function CollectionsPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -32,8 +33,13 @@ export default function CollectionsPage() {
         </div>
 
         {/* Collections Grid */}
-        <div className="flex-1 overflow-y-auto py-6">
+        <div className="flex-1 overflow-y-auto py-6 pb-20">
           <CollectionGrid collections={collections} isLoading={isLoading} />
+        </div>
+
+        {/* Tab Bar */}
+        <div className="shrink-0">
+          <TabBar />
         </div>
       </div>
     </div>

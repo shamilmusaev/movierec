@@ -10,6 +10,7 @@ export interface Collection {
   tagline: string;
   theme: 'inspirational' | 'dark' | 'comedy' | 'action' | 'scifi' | 'romantic' | 'thriller' | 'drama' | 'oscar' | 'hidden';
   movieIds: number[]; // TMDB movie IDs
+  likes?: number; // Number of likes
 }
 
 export const collections: Collection[] = [
@@ -19,6 +20,7 @@ export const collections: Collection[] = [
     description: 'Timeless masterpieces that define cinema. From classics to modern marvels, these films are essential viewing for any movie lover.',
     tagline: 'Essential Cinema',
     theme: 'drama',
+    likes: 1234,
     movieIds: [
       278,    // The Shawshank Redemption
       238,    // The Godfather
@@ -43,6 +45,7 @@ export const collections: Collection[] = [
     description: 'Uplifting, heartwarming films that will brighten your day. Perfect for when you need a mood boost or a cozy movie night.',
     tagline: 'Pure Joy',
     theme: 'inspirational',
+    likes: 892,
     movieIds: [
       13,     // Forrest Gump
       920,    // Cars
@@ -66,6 +69,7 @@ export const collections: Collection[] = [
     description: 'Psychological twists and turns that will keep you guessing until the very end. Prepare to have your perception of reality challenged.',
     tagline: 'Question Everything',
     theme: 'thriller',
+    likes: 1567,
     movieIds: [
       27205,  // Inception
       157336, // Interstellar
@@ -89,6 +93,7 @@ export const collections: Collection[] = [
     description: 'Space operas and futuristic worlds that expand the boundaries of imagination. From distant galaxies to alternate realities.',
     tagline: 'Beyond Reality',
     theme: 'scifi',
+    likes: 2103,
     movieIds: [
       27205,  // Inception
       157336, // Interstellar
@@ -112,6 +117,7 @@ export const collections: Collection[] = [
     description: 'Timeless love stories that have captured hearts for generations. From sweeping epics to intimate tales of connection.',
     tagline: 'Love Never Dies',
     theme: 'romantic',
+    likes: 756,
     movieIds: [
       19404,  // Dilwale Dulhania Le Jayenge
       11216,  // Cinema Paradiso
@@ -135,6 +141,7 @@ export const collections: Collection[] = [
     description: 'Psychological horror and dark themes that push the boundaries. Not for the faint of heart, these films explore humanity\'s shadows.',
     tagline: 'Enter the Darkness',
     theme: 'dark',
+    likes: 945,
     movieIds: [
       539,    // Psycho
       274,    // The Silence of the Lambs
@@ -158,6 +165,7 @@ export const collections: Collection[] = [
     description: 'The funniest films ever made. From slapstick to satire, these movies guarantee non-stop laughter.',
     tagline: 'Pure Comedy Gold',
     theme: 'comedy',
+    likes: 1089,
     movieIds: [
       293660, // Deadpool
       293167, // Kung Fu Panda 3
@@ -181,6 +189,7 @@ export const collections: Collection[] = [
     description: 'Non-stop thrills and spectacular stunts. Adrenaline-pumping action from start to finish.',
     tagline: 'Edge of Your Seat',
     theme: 'action',
+    likes: 1823,
     movieIds: [
       155,    // The Dark Knight
       76341,  // Mad Max: Fury Road
@@ -204,6 +213,7 @@ export const collections: Collection[] = [
     description: 'Academy Award Best Picture winners that defined their eras. Critically acclaimed masterpieces recognized by the industry.',
     tagline: 'Award-Winning Excellence',
     theme: 'oscar',
+    likes: 1456,
     movieIds: [
       238,    // The Godfather
       240,    // The Godfather Part II
@@ -227,6 +237,7 @@ export const collections: Collection[] = [
     description: 'Underrated masterpieces that deserve more recognition. Discover incredible films that flew under the radar.',
     tagline: 'Discover the Undiscovered',
     theme: 'hidden',
+    likes: 634,
     movieIds: [
       11216,  // Cinema Paradiso
       129,    // Spirited Away
