@@ -9,6 +9,7 @@ import { MovieCard } from '@/components/MovieCard';
 import { useFavorites } from '@/hooks/useFavorites';
 
 type ExtendedMovie = Movie & { trailer: MovieVideo | null };
+type MovieWithTrailer = Movie & { trailer: MovieVideo };
 
 interface CollectionDetailPageProps {
   params: Promise<{ id: string }>;
@@ -17,7 +18,7 @@ interface CollectionDetailPageProps {
 export default function CollectionDetailPage({ params }: CollectionDetailPageProps) {
   const router = useRouter();
   const [collection, setCollection] = useState<Collection | null>(null);
-  const [movies, setMovies] = useState<ExtendedMovie[]>([]);
+  const [movies, setMovies] = useState<MovieWithTrailer[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [muted, setMuted] = useState(true);
@@ -62,7 +63,7 @@ export default function CollectionDetailPage({ params }: CollectionDetailPagePro
       });
 
       const loadedMovies = await Promise.all(moviePromises);
-      const validMovies = loadedMovies.filter((m): m is ExtendedMovie => 
+      const validMovies = loadedMovies.filter((m): m is MovieWithTrailer => 
         m !== null && m.trailer !== null
       );
 

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import type { Collection } from '@/data/collections';
 import { getMovieById, getImageUrl } from '@/lib/tmdb/client';
 import type { Movie } from '@/types/tmdb';
+import { useFavoriteCollections } from '@/hooks/useFavoriteCollections';
 
 interface CollectionCardProps {
   collection: Collection;
@@ -15,6 +16,8 @@ export function CollectionCard({ collection }: CollectionCardProps) {
   const movieCount = collection.movieIds.length;
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const favoriteCollections = useFavoriteCollections();
+  const isFavorite = favoriteCollections.isFavorite(collection.id);
 
   useEffect(() => {
     async function fetchMovies() {
@@ -34,6 +37,12 @@ export function CollectionCard({ collection }: CollectionCardProps) {
 
     fetchMovies();
   }, [collection.movieIds]);
+
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    favoriteCollections.toggle(collection.id);
+  };
 
   return (
     <Link href={`/collections/${collection.id}`}>
@@ -83,6 +92,27 @@ export function CollectionCard({ collection }: CollectionCardProps) {
                 </div>
               </>
             )}
+
+            {/* Favorite Button - top right */}
+            <button
+              onClick={handleFavoriteToggle}
+              className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center hover:bg-black/90 transition-colors z-10"
+              aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <svg
+                className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-white'}`}
+                fill={isFavorite ? 'currentColor' : 'none'}
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+            </button>
 
             {/* Bottom Overlay with Info */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent backdrop-blur-sm p-4">
