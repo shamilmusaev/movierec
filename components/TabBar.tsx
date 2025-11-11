@@ -1,18 +1,23 @@
 'use client';
 
-interface TabBarProps {
-  activeTab: 'home' | 'favorites';
-  onTabChange: (tab: 'home' | 'favorites') => void;
-}
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-export function TabBar({ activeTab, onTabChange }: TabBarProps) {
+export function TabBar() {
+  const pathname = usePathname();
+  
+  const isHome = pathname === '/';
+  const isCollections = pathname?.startsWith('/collections');
+  const isFavorites = pathname === '/favorites';
+
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-800 safe-area-bottom">
+    <div className="fixed bottom-0 left-0 right-0 bg-zinc-900/95 backdrop-blur-lg border-t border-zinc-800 pb-safe z-30">
       <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
-        <button
-          onClick={() => onTabChange('home')}
+        {/* Home Tab */}
+        <Link
+          href="/"
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'home' ? 'text-red-500' : 'text-zinc-400 hover:text-zinc-200'
+            isHome ? 'text-red-500' : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
           <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,12 +29,31 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
             />
           </svg>
           <span className="text-xs font-medium">Home</span>
-        </button>
+        </Link>
 
-        <button
-          onClick={() => onTabChange('favorites')}
+        {/* Collections Tab */}
+        <Link
+          href="/collections"
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'favorites' ? 'text-red-500' : 'text-zinc-400 hover:text-zinc-200'
+            isCollections ? 'text-red-500' : 'text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            />
+          </svg>
+          <span className="text-xs font-medium">Collections</span>
+        </Link>
+
+        {/* Favorites Tab */}
+        <Link
+          href="/favorites"
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+            isFavorites ? 'text-red-500' : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
           <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,7 +65,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
             />
           </svg>
           <span className="text-xs font-medium">Favorites</span>
-        </button>
+        </Link>
       </div>
     </div>
   );

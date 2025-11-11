@@ -70,6 +70,13 @@ export async function getPopularMovies(page: number = 1): Promise<Movie[]> {
 }
 
 /**
+ * Get a single movie by ID
+ */
+export async function getMovieById(movieId: number): Promise<Movie> {
+  return await fetchTMDB<Movie>(`/movie/${movieId}`);
+}
+
+/**
  * Get trailer videos for a specific movie
  */
 export async function getMovieVideos(movieId: number): Promise<MovieVideo[]> {

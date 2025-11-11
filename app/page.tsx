@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 import type { Movie, MovieVideo, Genre } from '@/types/tmdb';
 import {
   getPopularMovies,
@@ -11,10 +10,8 @@ import {
   getImageUrl,
 } from '@/lib/tmdb/client';
 import { useFavorites } from '@/hooks/useFavorites';
-import { useSwipe } from '@/hooks/useSwipe';
 import { MovieCard } from '@/components/MovieCard';
 import { CategoryTabs } from '@/components/CategoryTabs';
-import { SwipeFeedback } from '@/components/SwipeFeedback';
 import { TabBar } from '@/components/TabBar';
 
 type ExtendedMovie = Movie & { trailer: MovieVideo | null };
@@ -26,10 +23,8 @@ export default function Home() {
   const [categories, setCategories] = useState<(Genre | { id: string; name: string })[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | number>('popular');
   const [muted, setMuted] = useState(true);
-  const [activeTab, setActiveTab] = useState<'home' | 'favorites'>('home');
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [feedbackDirection, setFeedbackDirection] = useState<'left' | 'right' | null>(null);
-
+  
+  const containerRef = useRef<HTMLDivElement>(null);
   const favorites = useFavorites();
 
   // Load genres on mount
@@ -68,11 +63,16 @@ export default function Home() {
         moviesList.slice(0, 20).map(async (movie) => {
           try {
             const videos = await getMovieVideos(movie.id);
+            // Фильтруем только YouTube видео типа Trailer
+            const validTrailers = videos.filter(
+              v => v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser')
+            );
             return {
               ...movie,
-              trailer: videos[0] || null,
+              trailer: validTrailers[0] || null,
             };
           } catch (error) {
+            console.warn(`Failed to load trailers for movie ${movie.id}:`, error);
             return {
               ...movie,
               trailer: null,
@@ -105,40 +105,40 @@ export default function Home() {
     }
   };
 
-  const handleSwipeLeft = () => {
-    setFeedbackDirection('left');
-    setShowFeedback(true);
-    setTimeout(() => setShowFeedback(false), 500);
-    
-    if (currentIndex < movies.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      loadMovies(); // Load more when reaching end
-    }
+  // Intersection Observer для отслеживания текущего видимого видео
+  useEffect(() => {
+    if (!containerRef.current || movies.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0');
+            setCurrentIndex(index);
+            
+            // Загружаем больше видео когда приближаемся к концу
+            if (index >= movies.length - 3) {
+              loadMovies();
+            }
+          }
+        });
+      },
+      {
+        root: containerRef.current,
+        threshold: 0.75, // 75% видимости
+      }
+    );
+
+    // Наблюдаем за всеми карточками
+    const cards = containerRef.current.querySelectorAll('[data-movie-card]');
+    cards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [movies.length]);
+
+  const handleFavoriteToggle = (movieId: number) => {
+    favorites.toggle(movieId);
   };
-
-  const handleSwipeRight = () => {
-    const currentMovie = movies[currentIndex];
-    if (currentMovie) {
-      favorites.add(currentMovie.id);
-    }
-
-    setFeedbackDirection('right');
-    setShowFeedback(true);
-    setTimeout(() => setShowFeedback(false), 500);
-
-    if (currentIndex < movies.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      loadMovies();
-    }
-  };
-
-  const { swipeState, handlers } = useSwipe({
-    onSwipeLeft: handleSwipeLeft,
-    onSwipeRight: handleSwipeRight,
-    threshold: 100,
-  });
 
   const handleCategoryChange = (categoryId: string | number) => {
     setActiveCategory(categoryId);
@@ -149,27 +149,13 @@ export default function Home() {
     ? getImageUrl(currentMovie.backdrop_path, 'w780')
     : null;
 
-  if (activeTab === 'favorites') {
-    return <FavoritesView onBack={() => setActiveTab('home')} />;
-  }
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Blurred Background */}
-      {backgroundImage && (
-        <div className="fixed inset-0 z-0">
-          <div
-            className="absolute inset-0 bg-cover bg-center blur-3xl scale-110"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
-          />
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
-      )}
-
       {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative z-10 flex flex-col h-screen">
         {/* Category Tabs with safe-area */}
-        <div className="pt-safe">
+        <div className="pt-safe shrink-0">
           <CategoryTabs
             categories={categories}
             activeCategory={activeCategory}
@@ -177,147 +163,60 @@ export default function Home() {
           />
         </div>
 
-        {/* Main Swipe Area */}
-        <div className="flex-1 flex items-center justify-center px-0 pb-20 pb-safe">
+        {/* Main Scroll Snap Container - TikTok style */}
+        <div 
+          ref={containerRef}
+          className="flex-1 overflow-y-auto snap-y snap-mandatory hide-scrollbar"
+          style={{
+            scrollBehavior: 'smooth',
+            WebkitOverflowScrolling: 'touch', // iOS momentum scrolling
+            touchAction: 'pan-y', // Only vertical scrolling
+          }}
+        >
           {isLoading ? (
-            <div className="flex items-center justify-center">
+            <div className="min-h-full flex items-center justify-center snap-start">
               <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
             </div>
           ) : movies.length === 0 ? (
-            <div className="text-center">
-              <p className="text-xl text-zinc-400">No movies found</p>
-              <button
-                onClick={loadMovies}
-                className="mt-4 px-6 py-2 bg-red-600 rounded-full hover:bg-red-700 transition-colors"
-              >
-                Try Again
-              </button>
+            <div className="min-h-full flex items-center justify-center snap-start">
+              <div className="text-center">
+                <p className="text-xl text-zinc-400">No movies found</p>
+                <button
+                  onClick={loadMovies}
+                  className="mt-4 px-6 py-2 bg-red-600 rounded-full hover:bg-red-700 transition-colors"
+                >
+                  Try Again
+                </button>
+              </div>
             </div>
           ) : (
-            <div className="relative w-full h-full">
-              <AnimatePresence mode="wait">
-                {currentMovie && (
-                  <MovieCard
-                    key={currentMovie.id}
-                    movie={currentMovie}
-                    trailer={currentMovie.trailer}
-                    isActive={true}
-                    isFavorite={favorites.isFavorite(currentMovie.id)}
-                    muted={muted}
-                    onFavoriteToggle={() => favorites.toggle(currentMovie.id)}
-                    onMuteToggle={() => setMuted(!muted)}
-                    dragHandlers={handlers}
-                  />
-                )}
-              </AnimatePresence>
-
-              {/* Swipe Indicators */}
-              {swipeState.isDragging && (
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-between px-8">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{
-                      opacity: swipeState.direction === 'left' ? swipeState.distance / 100 : 0,
-                    }}
-                    className="text-red-500 text-6xl font-bold"
-                  >
-                    ✕
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{
-                      opacity: swipeState.direction === 'right' ? swipeState.distance / 100 : 0,
-                    }}
-                    className="text-green-500 text-6xl font-bold"
-                  >
-                    ♥
-                  </motion.div>
-                </div>
-              )}
-            </div>
+            movies.map((movie, index) => (
+              <div
+                key={movie.id}
+                data-index={index}
+                data-movie-card
+                className="h-[calc(100vh-8rem)] snap-start snap-always flex items-center justify-center px-4"
+                style={{ scrollSnapStop: 'always' }}
+              >
+                <MovieCard
+                  movie={movie}
+                  trailer={movie.trailer}
+                  isActive={index === currentIndex}
+                  isFavorite={favorites.isFavorite(movie.id)}
+                  muted={muted}
+                  onFavoriteToggle={() => handleFavoriteToggle(movie.id)}
+                  onMuteToggle={() => setMuted(!muted)}
+                />
+              </div>
+            ))
           )}
         </div>
 
         {/* Tab Bar */}
-        <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
-      </div>
-
-      {/* Swipe Feedback */}
-      <SwipeFeedback direction={feedbackDirection} show={showFeedback} />
-    </div>
-  );
-}
-
-// Favorites View Component
-function FavoritesView({ onBack }: { onBack: () => void }) {
-  const favorites = useFavorites();
-  const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadFavoriteMovies();
-  }, [favorites.favorites]);
-
-  const loadFavoriteMovies = async () => {
-    if (favorites.favorites.length === 0) {
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    // For MVP, we'll just show the IDs. In production, fetch full movie data
-    setIsLoading(false);
-  };
-
-  return (
-    <div className="min-h-screen bg-black text-white pb-20">
-      <div className="sticky top-0 bg-black/95 backdrop-blur-lg border-b border-zinc-800 z-10">
-        <div className="flex items-center justify-between p-4">
-          <button onClick={onBack} className="p-2 hover:bg-zinc-800 rounded-full transition-colors">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h1 className="text-xl font-bold">Favorites</h1>
-          <div className="w-10" />
+        <div className="shrink-0">
+          <TabBar />
         </div>
       </div>
-
-      <div className="p-4">
-        {favorites.favorites.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-            <svg className="w-24 h-24 text-zinc-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-            <h2 className="text-2xl font-bold mb-2 text-zinc-400">No favorites yet</h2>
-            <p className="text-zinc-500">Swipe right on movies you like to add them here</p>
-          </div>
-        ) : (
-          <div>
-            <p className="text-zinc-400 mb-4">{favorites.count} favorite{favorites.count !== 1 ? 's' : ''}</p>
-            <div className="grid grid-cols-2 gap-4">
-              {favorites.favorites.map((movieId) => (
-                <div key={movieId} className="bg-zinc-900 rounded-lg p-4 text-center">
-                  <p className="text-sm text-zinc-400">Movie ID: {movieId}</p>
-                  <button
-                    onClick={() => favorites.remove(movieId)}
-                    className="mt-2 text-xs text-red-500 hover:text-red-400"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <TabBar activeTab="favorites" onTabChange={(tab) => tab === 'home' && onBack()} />
     </div>
   );
 }
