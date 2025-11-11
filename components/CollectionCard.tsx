@@ -96,7 +96,7 @@ export function CollectionCard({ collection }: CollectionCardProps) {
             {/* Favorite Button - top right */}
             <button
               onClick={handleFavoriteToggle}
-              className="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center hover:bg-black/90 transition-colors z-10"
+              className="absolute top-3 right-3 w-12 h-12 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center hover:bg-black/90 transition-colors z-10"
               aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <svg

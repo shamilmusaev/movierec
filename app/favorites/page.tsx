@@ -72,9 +72,9 @@ export default function FavoritesPage() {
       <div className="flex flex-col h-screen">
         {/* Header */}
         <div className="sticky top-0 bg-black/95 backdrop-blur-lg border-b border-zinc-800 z-10 pt-safe shrink-0">
-          <div className="px-4 py-4">
-            <h1 className="text-2xl font-bold">Favorites</h1>
-            <p className="text-sm text-zinc-400 mt-1">
+          <div className="px-3 xs:px-4 sm:px-5 py-3 xs:py-4">
+            <h1 className="text-xl xs:text-2xl font-bold">Favorites</h1>
+            <p className="text-xs xs:text-sm text-zinc-400 mt-1">
               {totalCount} item{totalCount !== 1 ? 's' : ''} saved
             </p>
           </div>
@@ -113,7 +113,7 @@ export default function FavoritesPage() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto pb-20">
           {activeTab === 'movies' ? (
-            <div className="p-4">
+            <div className="p-3 xs:p-4 sm:p-5">
               {isLoading ? (
                 <div className="flex items-center justify-center min-h-[60vh]">
                   <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
@@ -138,7 +138,7 @@ export default function FavoritesPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 xs:gap-4 md:gap-5">
                   {favoriteMovies.map((movie) => (
                     <FavoriteMovieCard
                       key={movie.id}
@@ -150,7 +150,7 @@ export default function FavoritesPage() {
               )}
             </div>
           ) : (
-            <div className="p-4">
+            <div className="p-3 xs:p-4 sm:p-5">
               {collections.length === 0 ? (
                 <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
                   <svg className="w-24 h-24 text-zinc-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +171,7 @@ export default function FavoritesPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 xs:gap-4 md:gap-5">
                   {collections.map((collection) => (
                     <CollectionCard key={collection.id} collection={collection} />
                   ))}

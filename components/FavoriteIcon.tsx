@@ -14,12 +14,12 @@ export function FavoriteIcon({ isFavorite, onToggle }: FavoriteIconProps) {
         e.stopPropagation();
         onToggle();
       }}
-      className="bg-black/50 hover:bg-black/70 p-3 rounded-full transition-colors backdrop-blur-sm"
+      className="bg-black/50 hover:bg-black/70 p-4 rounded-full transition-colors backdrop-blur-sm min-w-[48px] min-h-[48px] flex items-center justify-center"
       whileTap={{ scale: 0.9 }}
       aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
     >
       <motion.svg
-        className="w-7 h-7"
+        className="w-6 h-6"
         fill={isFavorite ? 'currentColor' : 'none'}
         stroke="currentColor"
         viewBox="0 0 24 24"

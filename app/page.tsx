@@ -154,7 +154,7 @@ export default function Home() {
       {/* Content */}
       <div className="relative z-10 flex flex-col h-screen">
         {/* Category Tabs with safe-area */}
-        <div className="pt-safe shrink-0">
+        <div className="pt-safe shrink-0 landscape:py-1">
           <CategoryTabs
             categories={categories}
             activeCategory={activeCategory}
@@ -194,7 +194,7 @@ export default function Home() {
                 key={movie.id}
                 data-index={index}
                 data-movie-card
-                className="h-[calc(100vh-8rem)] snap-start snap-always flex items-center justify-center px-4"
+                className="h-[calc(100vh-8rem)] landscape:h-[calc(100vh-4rem)] snap-start snap-always flex items-center justify-center px-3 xs:px-4"
                 style={{ scrollSnapStop: 'always' }}
               >
                 <MovieCard

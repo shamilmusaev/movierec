@@ -25,8 +25,8 @@ export function CategoryTabs({
               key={category.id}
               onClick={() => onCategoryChange(category.id)}
               className={`
-                relative px-6 py-2 rounded-full font-medium text-sm whitespace-nowrap
-                transition-colors
+                relative px-6 py-3 rounded-full font-medium text-sm whitespace-nowrap
+                transition-colors min-h-[44px] flex items-center justify-center
                 ${isActive
                   ? 'text-white'
                   : 'text-zinc-400 hover:text-zinc-200'

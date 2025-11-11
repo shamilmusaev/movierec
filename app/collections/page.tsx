@@ -24,9 +24,9 @@ export default function CollectionsPage() {
       <div className="flex flex-col h-screen">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-lg border-b border-zinc-800 pt-safe shrink-0">
-          <div className="px-4 md:px-6 lg:px-8 py-4 max-w-7xl mx-auto">
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Collections</h1>
-            <p className="text-sm md:text-base text-zinc-400 mt-1">
+          <div className="px-3 xs:px-4 md:px-6 lg:px-8 py-3 xs:py-4 max-w-7xl mx-auto">
+            <h1 className="text-xl xs:text-2xl md:text-3xl font-bold text-white">Collections</h1>
+            <p className="text-xs xs:text-sm md:text-base text-zinc-400 mt-1">
               Curated movie lists for every mood
             </p>
           </div>
