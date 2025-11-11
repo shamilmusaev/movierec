@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import type { Genre } from '@/types/tmdb';
+import { getGenreIcon } from '@/lib/genreIcons';
 
 interface CategoryTabsProps {
   categories: (Genre | { id: string; name: string })[];
@@ -19,7 +20,8 @@ export function CategoryTabs({
       <div className="flex gap-2 px-4 py-3 min-w-min">
         {categories.map((category) => {
           const isActive = category.id === activeCategory;
-          
+          const Icon = getGenreIcon(typeof category.id === 'number' ? category.id : category.name);
+
           return (
             <motion.button
               key={category.id}
@@ -41,7 +43,10 @@ export function CategoryTabs({
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
-              <span className="relative z-10">{category.name}</span>
+              <span className="relative z-10 flex items-center gap-2">
+                <Icon className="w-4 h-4" />
+                {category.name}
+              </span>
             </motion.button>
           );
         })}
